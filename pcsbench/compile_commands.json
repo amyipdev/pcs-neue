@@ -1,0 +1,19 @@
+[
+  {
+    "arguments": [
+      "/home/amy/.nix-profile/bin/cc",
+      "-O3",
+      "-Wall",
+      "-Werror",
+      "-I/nix/store/1hhi03gg5jdb2fa5gb9ncklziczax741-glib-2.82.1-dev/include/glib-2.0",
+      "-I/nix/store/ipqijizc7rqsxifxc6ky16hr5l0hpls2-glib-2.82.1/lib/glib-2.0/include",
+      "-c",
+      "-o",
+      "src/main.o",
+      "src/main.c"
+    ],
+    "directory": "/home/amy/dev/pcsbench",
+    "file": "/home/amy/dev/pcsbench/src/main.c",
+    "output": "/home/amy/dev/pcsbench/src/main.o"
+  }
+]
