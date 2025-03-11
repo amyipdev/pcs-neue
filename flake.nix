@@ -10,11 +10,11 @@
         pkgs = import nixpkgs {
           inherit system;
         };
-      in
+      in {
 	packages.buddyinfo = pkgs.rustPlatform.buildRustPackage rec {
-          pname = "buddyinfo";
-          version = "0.0.1";
+          name = "buddyinfo";
           src = ./buddyinfo;
+          cargoHash = "sha256-D8cGsDRTcP9YECADux1PdTGqRASIg7jmIiug9vuoKmA=";
           doCheck = false;
         };
         packages.pcsbench = pkgs.stdenv.mkDerivation {
@@ -25,7 +25,8 @@
             pkg-config
           ];
           installPhase = ''
-            cp pcsbench $out
+            mkdir -p $out/bin
+	    cp pcsbench $out/bin/pcsbench
           '';
         };
       }
