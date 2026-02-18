@@ -106,6 +106,12 @@ int main(int argc, char **argv) {
     for (size_t i = 0; i < 10; ++i) {
         // Change compaction level
         BENCHES[args.bench](&si, (uint64_t)i);
+        double la[3];
+        if (getloadavg(la, 3) >= 0)
+            printf("%f,%f,%f\n", la[0], la[1], la[2]);
+        else
+            perr();
+        fflush(stdout);
         // TODO: expand from 10 to 100 (or greater?) once we know it works well
         for (size_t j = 0; j < 10; ++j) {
             int pid = fork();
