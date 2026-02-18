@@ -1,3 +1,6 @@
 *.o
 target/
 result
+pcsbench-bin
+buddyinfo-bin
+log/

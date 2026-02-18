@@ -27,7 +27,7 @@ Buddyinfo is our buddy allocator visualization tool. You can build it with
 
 ```sh
 nix build .\#buddyinfo
-cp result buddyinfo-bin
+cp result/bin/buddyinfo buddyinfo-bin
 ```
 
 You should then choose a refresh frequency, between 0.05s and 1s, and run `watch` with it (0.1 as an example):
@@ -38,11 +38,13 @@ watch -n 0.1 ./buddyinfo-bin
 
 ### PCSbench
 
-PCSbench is our benchmarking tool. You can build it with
+PCSbench is our benchmarking tool. You can build it with `nix build .\#pcsbench`, or use this script for running
+everything in one go:
 
-```sh
-nix build .\#pcsbench
-cp result pcsbench-bin
+``` sh
+# For running the original kernel tests
+./bench.sh kernel
+# For running the alternative heuristic
+./bench.sh drg
 ```
 
-You can then run `./pcsbench` to run the default test, or `./pcsbench --bench=N` to run test N.

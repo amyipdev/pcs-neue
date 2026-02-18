@@ -17,7 +17,18 @@ inline uint64_t udt(struct sysinfo *si, uint64_t ct) {
     return si->freeram + si->bufferram + ct;
 }
 
+void bench_kern(struct sysinfo *_si, uint64_t ct) {
+    FILE *f = fopen("/proc/sys/vm/compaction_proactiveness", "w");
+    if (!f) {
+        perr();
+        exit(1);
+    }
+    fprintf(f, "%llu", (unsigned long long)(ct * 10));
+}
+
 // TODO: factor this code out into a common function that just calls a method changer
+// the previous todo has been done in main, this code is kept for legacy purposes
+/*
 void bench_kern(struct sysinfo *si, uint64_t ct) {
     uint64_t total_free = udt(si, ct);
     printf("Total free memory: %lu MiB\n", total_free >> 20);
@@ -89,4 +100,4 @@ void bench_kern(struct sysinfo *si, uint64_t ct) {
             sleep(10);
         //}
     //}
-}
+}*/

@@ -44,7 +44,7 @@ static struct argp_option options[] = {
     {0}
 };
 
-enum Benchmarks { BENCH_DEFAULT = 0, BENCH_DRG = 1 };
+enum Benchmarks { BENCH_DEFAULT = 0, BENCH_DRG = 1, BENCH_DNE = 2 };
 const char *BENCH_NAMES[] = {
     "kernel-default",
     "drg-unnamed"
@@ -58,7 +58,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     struct arguments *arguments = state->input;
     switch (key) {
         case 128:
-            if (!strcmp("drg", arg))
+            int n = atoi(arg);
+            if (n > 0 && n < BENCH_DNE)
+                arguments->bench = n;
+            else if (!strcmp("drg", arg))
                 arguments->bench = BENCH_DRG;
             else
                 arguments->bench = BENCH_DEFAULT;
@@ -89,10 +92,12 @@ int main(int argc, char **argv) {
 
     printf("%s\n", argp_program_version);
     printf("Executing benchmark %s\n", BENCH_NAMES[args.bench]);
+    fflush(stdout);
 
     int _wpid, _st;
     uint64_t total_free = si.freeram + si.bufferram + cachedmem();
     printf("Total free memory: %lu MiB\n", total_free >> 20);
+    fflush(stdout);
     uint64_t apg = (total_free * 9 / 10) >> PS_SHIFT;
     uint64_t ptf = apg >> 3;
     uint64_t hpta = ptf >> 9;
@@ -100,6 +105,8 @@ int main(int argc, char **argv) {
     GArray *ptrs = g_array_new(FALSE, FALSE, sizeof(void *));
     for (size_t i = 0; i < 10; ++i) {
         // Change compaction level
+        BENCHES[args.bench](&si, (uint64_t)i);
+        // TODO: expand from 10 to 100 (or greater?) once we know it works well
         for (size_t j = 0; j < 10; ++j) {
             int pid = fork();
             if (pid == 0) {
@@ -132,13 +139,11 @@ int main(int argc, char **argv) {
                     g_array_append_vals(ptrs, &buf, 1);
                     memset(buf, 0x83, HPAGE_SIZE);
                 }
-                printf("iter: %lu us\n", end_timer(t0));
+                printf("iter(%zu,%zu): %lu us\n", i, j, end_timer(t0));
                 fflush(stdout);
                 free(t0);
                 // free everything and we start over
                 // need to do the HPs first
-                printf("a");
-                fflush(stdout);
                 size_t hdrop = ptrs->len - hpta;
                 for (size_t _k = ptrs->len - 1; _k > hdrop; --_k) {
                     void *b = g_array_index(ptrs, void *, _k);
@@ -146,15 +151,11 @@ int main(int argc, char **argv) {
                     munmap(b, HPAGE_SIZE);
                     g_array_remove_index(ptrs, _k);
                 }
-                printf("b");
-                fflush(stdout);
                 for (ssize_t _k = ptrs->len - 1; _k >= 0; --_k) {
                     void *b = g_array_index(ptrs, void *, _k);
                     munmap(b, PAGE_SIZE);
                     g_array_remove_index(ptrs, _k);
                 }
-                printf("c");
-                fflush(stdout);
                 // TODO: configurable sleep
                 g_array_free(ptrs, TRUE);
                 return 0;
