@@ -11,10 +11,10 @@
           inherit system;
         };
       in {
-	packages.buddyinfo = pkgs.rustPlatform.buildRustPackage rec {
+        packages.buddyinfo = pkgs.rustPlatform.buildRustPackage rec {
           name = "buddyinfo";
           src = ./buddyinfo;
-          cargoHash = "sha256-D8cGsDRTcP9YECADux1PdTGqRASIg7jmIiug9vuoKmA=";
+          cargoHash = "sha256-8rMZ19gNa20kKzg5BEgErnQlAf2aPuOdWZb1PibCmRw=";
           doCheck = false;
         };
         packages.pcsbench = pkgs.stdenv.mkDerivation {
@@ -26,7 +26,7 @@
           ];
           installPhase = ''
             mkdir -p $out/bin
-	    cp pcsbench $out/bin/pcsbench
+            cp pcsbench $out/bin/pcsbench
           '';
         };
       }
