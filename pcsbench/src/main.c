@@ -119,7 +119,7 @@ int main(int argc, char **argv) {
             perr();
         fflush(stdout);
         // TODO: expand from 10 to 100 (or greater?) once we know it works well
-        for (size_t j = 0; j < 10; ++j) {
+        for (size_t j = 0; j < 250; ++j) {
             int pid = fork();
             if (!pid) {
                 for (size_t _j = 0; _j < apg; ++_j) {

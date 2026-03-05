@@ -21,6 +21,12 @@
 
 #define P(Q) ((unsigned long long)(MIN(100.0L,MAX(0.0L,(((Q1*Q2*(P1-P2)/(Q))+(P2*Q2-P1*Q1))/(Q2-Q1))*100.0L))))
 
+#ifdef __aarch64__
+#define ZONEINFO "Node 0, zone      DMA"
+#else
+#define ZONEINFO "Node 0, zone   Normal"
+#endif
+
 // TODO: for full paper, refactor this (and a lot of other things)
 // that create unnecessarily deep blocks
 void bench_drg(struct sysinfo *_si, uint64_t ct) {
@@ -38,7 +44,7 @@ void bench_drg(struct sysinfo *_si, uint64_t ct) {
                 buf[n] = '\0';
                 char *line = strtok(buf, "\n");
                 while (line) {
-                    if (!unlikely(strncmp(line, "Node 0, zone   Normal", 21))) {
+                    if (!unlikely(strncmp(line, ZONEINFO, 21))) {
                         char *nums = line + 22;
                         char *end;
                         size_t fp = 0, hp = 0;
