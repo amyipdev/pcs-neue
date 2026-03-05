@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+#include <stdatomic.h>
 
 #include <sys/time.h>
 
@@ -52,3 +54,5 @@ uint64_t end_timer(struct timeval *timer) {
     free(tv);
     return ems;
 }
+
+atomic_bool *completed = NULL;

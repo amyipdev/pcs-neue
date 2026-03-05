@@ -98,12 +98,18 @@ int main(int argc, char **argv) {
     uint64_t total_free = si.freeram + si.bufferram + cachedmem();
     printf("Total free memory: %lu MiB\n", total_free >> 20);
     fflush(stdout);
-    uint64_t apg = (total_free * 9 / 10) >> PS_SHIFT;
-    uint64_t ptf = apg >> 3;
-    uint64_t hpta = ptf >> 9;
+    const uint64_t apg = (total_free * 9 / 10) >> PS_SHIFT;
+    const uint64_t ptf = apg >> 3;
+    const uint64_t hpta = ptf >> (HPS_SHIFT - PS_SHIFT);
     srand(time(NULL));
     GArray *ptrs = g_array_new(FALSE, FALSE, sizeof(void *));
-    for (size_t i = 0; i < 10; ++i) {
+    completed = (atomic_bool*)mmap(NULL, sizeof(bool), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    if (!completed) {
+        perr();
+        exit(1);
+    }
+    *completed = false;
+    for (size_t i = 0; i <= 10; ++i) {
         // Change compaction level
         BENCHES[args.bench](&si, (uint64_t)i);
         double la[3];
@@ -115,7 +121,7 @@ int main(int argc, char **argv) {
         // TODO: expand from 10 to 100 (or greater?) once we know it works well
         for (size_t j = 0; j < 10; ++j) {
             int pid = fork();
-            if (pid == 0) {
+            if (!pid) {
                 for (size_t _j = 0; _j < apg; ++_j) {
                     void *buf = mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
                     if (!buf)
@@ -166,11 +172,11 @@ int main(int argc, char **argv) {
                 g_array_free(ptrs, TRUE);
                 return 0;
             } else {
-                while ((_wpid = wait(&_st)) > 0)
+                while ((_wpid = waitpid(pid, &_st, 0)) > 0)
                     sleep(1);
             }
         }
     }
-
+    *completed = true;
     return 0;
 }

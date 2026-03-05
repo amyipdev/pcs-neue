@@ -24,6 +24,7 @@ void bench_kern(struct sysinfo *_si, uint64_t ct) {
         exit(1);
     }
     fprintf(f, "%llu", (unsigned long long)(ct * 10));
+    fclose(f);
 }
 
 // TODO: factor this code out into a common function that just calls a method changer
