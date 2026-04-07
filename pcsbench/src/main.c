@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
     printf("Total free memory: %lu MiB\n", total_free >> 20);
     fflush(stdout);
     const uint64_t apg = (total_free * 9 / 10) >> PS_SHIFT;
-    const uint64_t ptf = apg >> 3;
+    const uint64_t ptf = apg >> 2;
     const uint64_t hpta = ptf >> (HPS_SHIFT - PS_SHIFT);
     srand(time(NULL));
     GArray *ptrs = g_array_new(FALSE, FALSE, sizeof(void *));

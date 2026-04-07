@@ -14,10 +14,10 @@
 #include "common.h"
 #include "drg.h"
 
-#define P1   (0.1L)
-#define P2   (0.9L)
-#define Q1   (0.2L)
-#define Q2   (0.04L)
+#define P1   (0.25L)
+#define P2   (0.95L)
+#define Q1   (0.25L)
+#define Q2   (0.08L)
 
 #define P(Q) ((unsigned long long)(MIN(100.0L,MAX(0.0L,(((Q1*Q2*(P1-P2)/(Q))+(P2*Q2-P1*Q1))/(Q2-Q1))*100.0L))))
 
